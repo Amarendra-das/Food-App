@@ -1,4 +1,5 @@
 const userModel = require("../models/user.model");
+const foodPartnerModel = require("../models/foodpartner.model")
 const bcrypt = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
 
@@ -82,6 +83,10 @@ function logoutUser(req,res){
     res.status(200).json({
         message:"User logged out successfully"
     })
+}
+
+async function registerFoodPartner(req,res){
+    
 }
 
 module.exports = {
