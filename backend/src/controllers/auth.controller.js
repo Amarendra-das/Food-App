@@ -86,8 +86,43 @@ function logoutUser(req,res){
 }
 
 async function registerFoodPartner(req,res){
-    
+    const {name,email,password} = req.body;
+     
+    const isAccountAlreadyExists = await foodPartnerModel.findOne({
+        email
+    })
+
+    if(isAccountAlreadyExists){
+        return  res.status(400).json({
+            message:"Food partner account already exists"
+        })
+    }
+   
+    const hashedPassword = await bcrypt.hash(password,10);
+
+    const foodPartner = await foodPartnerModel.create({
+        name,
+        email,
+        password: hashedPassword,
+    })
+
+    const token = sign({
+        id: user._id,
+    }, process.env.JWT_SECRET);
+
+    res.cookie("token", token);
+
+    res.status(201).json({
+        message: "Food partner registered successfully",
+        foodPartner: {
+            _id: foodPartner._id,
+            email: foodPartner.email,
+            fullName: foodPartner.name,
+        }
+    });
+
 }
+
 
 module.exports = {
     registerUser,
