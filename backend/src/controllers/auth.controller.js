@@ -1,7 +1,7 @@
 const userModel = require("../models/user.model");
 const foodPartnerModel = require("../models/foodpartner.model")
 const bcrypt = require("bcryptjs");
-const { sign } = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 
 async function registerUser(req, res) {
     const { fullName, email, password } = req.body;
@@ -25,9 +25,9 @@ async function registerUser(req, res) {
         password: hashedPassword,
     });
 
-    const token = sign({
-        id: user._id,
-    }, process.env.JWT_SECRET); 
+    const token = jwt.sign({
+    id: user._id,
+}, process.env.JWT_SECRET); 
 
     res.cookie("token", token);
 
@@ -62,9 +62,9 @@ async function loginUser(req, res) {
         });
     }
 
-    const token = sign({
-        id: user._id,
-    }, process.env.JWT_SECRET);
+    const token = jwt.sign({
+    id: user._id,
+}, process.env.JWT_SECRET); 
 
     res.cookie("token", token);
 
@@ -85,46 +85,49 @@ function logoutUser(req,res){
     })
 }
 
-async function registerFoodPartner(req,res){
-    const {name,email,password} = req.body;
-     
+async function registerFoodPartner(req, res) {
+    
+    const { name, email, password } = req.body;
+
     const isAccountAlreadyExists = await foodPartnerModel.findOne({
         email
     })
 
-    if(isAccountAlreadyExists){
-        return  res.status(400).json({
-            message:"Food partner account already exists"
+    if (isAccountAlreadyExists) {
+        return res.status(400).json({
+            message: "Food partner account already exists"
         })
     }
-   
-    const hashedPassword = await bcrypt.hash(password,10);
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    
     const foodPartner = await foodPartnerModel.create({
         name,
         email,
         password: hashedPassword,
     })
 
-    const token = sign({
-        id: user._id,
-    }, process.env.JWT_SECRET);
+    
+   const token = jwt.sign({
+    id:  foodPartner._id,
+}, process.env.JWT_SECRET); 
 
     res.cookie("token", token);
 
     res.status(201).json({
-        message: "Food partner registered successfully",
-        foodPartner: {
-            _id: foodPartner._id,
-            email: foodPartner.email,
-            fullName: foodPartner.name,
-        }
-    });
+    message: "Food partner registered successfully",
+    foodPartner: {
+        _id: foodPartner._id,
+        email: foodPartner.email,
+        name: foodPartner.name, 
+    }
+});
 
 }
 
 
-    async function loginFoodPartner(req, res) {
+async function loginFoodPartner(req, res) {
 
     const { email, password } = req.body;
 
@@ -146,21 +149,21 @@ async function registerFoodPartner(req,res){
         })
     }
 
+    
     const token = jwt.sign({
-        id: foodPartner._id,
-    }, process.env.JWT_SECRET)
+    id:  foodPartner._id,
+}, process.env.JWT_SECRET); 
 
     res.cookie("token", token)
 
     res.status(200).json({
-        message: "Food partner logged in successfully",
-        foodPartner: {
-            _id: foodPartner._id,
-            email: foodPartner.email,
-            name: foodPartner.name
-        }
-    })
-
+    message: "Food partner logged in successfully",
+    foodPartner: {
+        _id: foodPartner._id,
+        email: foodPartner.email,
+        name: foodPartner.name, 
+    }
+});
 }
 
 function logoutFoodPartner(req,res){
