@@ -1,8 +1,13 @@
 const express = require('express');
-const router = express.Router();
-const foodPartnerController = require('../controllers/food-partner.controller');
+const foodPartnerController = require("../controllers/food-partner.controller");
+const authMiddleware = require("../middleware/auth.middleware");
 
-router.post('/profile', foodPartnerController.createProfile);
-router.get('/profile', foodPartnerController.getProfile);
+const router = express.Router();
+
+
+/* /api/food-partner/:id */
+router.get("/:id",
+    authMiddleware.authUserMiddleware,
+    foodPartnerController.getFoodPartnerById)
 
 module.exports = router;
