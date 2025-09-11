@@ -5,23 +5,21 @@ import ReelFeed from '../../components/ReelFeed'
 
 const Home = () => {
     const [ videos, setVideos ] = useState([])
-    // Autoplay behavior is handled inside ReelFeed
+    
 
     useEffect(() => {
     axios.get("http://localhost:3000/api/food", { withCredentials: true })
         .then(response => {
             console.log("Successfully fetched data:", response.data);
-            // This is likely the next bug, so I've fixed it for you.
-            // Your API probably returns an array directly.
-            // Change it to this to get the array from inside the object
+            
              setVideos(response.data.foodItems);
         })
         .catch(error => {
-            // This will now show you the detailed error in the console.
+            
             console.error("Error fetching food items:", error);
         });
 }, []);
-    // Using local refs within ReelFeed; keeping map here for dependency parity if needed
+    
 
     async function likeVideo(item) {
 
